@@ -1,6 +1,7 @@
 package com.tomtech.apiproducts.service;
 
 import com.tomtech.apiproducts.dto.ProductDTO;
+import com.tomtech.apiproducts.enums.APIError;
 import com.tomtech.apiproducts.exception.TomTechExcepcion;
 import com.tomtech.apiproducts.model.Product;
 import com.tomtech.apiproducts.repository.ProductRepository;
@@ -36,26 +37,19 @@ public class ProductService {
         Optional<Product> result = repository.getProductById(id);
         if(result.isEmpty()){
 
-            throw new TomTechExcepcion(HttpStatus.NOT_FOUND, "Producto no encontrado con ID: " + id);
+            //throw new TomTechExcepcion(HttpStatus.NOT_FOUND, "Producto no encontrado con ID: " + id);
+            throw new TomTechExcepcion(APIError.PRODUCT_NOT_FOUND);
         }
         return conversionService.convert(result.get(),ProductDTO.class);
 
     }
 
-    public ProductDTO update(Integer id , ProductDTO productDTO) {
-        if(getProductsById(id)==null){
-            throw new TomTechExcepcion(HttpStatus.NOT_FOUND, "Id no encontrado");
-        }
-        Product transformed = conversionService.convert(productDTO,Product.class);
-        Product result = repository.update(id,transformed);
 
-        return conversionService.convert(result,ProductDTO.class);
-
-    }
 
     public ProductDTO save (ProductDTO productDTO   ){
         if(Objects.nonNull(productDTO.getId())){
-            throw new TomTechExcepcion(HttpStatus.BAD_REQUEST, "Mismo id no permitido");
+          //  throw new TomTechExcepcion(HttpStatus.BAD_REQUEST, "Mismo id no permitido");
+            throw new TomTechExcepcion(APIError.PRODUCT_WITH_SAME_ID);
 
         }
 
@@ -66,9 +60,23 @@ public class ProductService {
 
     }
 
+
+    public ProductDTO update(Integer id , ProductDTO productDTO) {
+        if(getProductsById(id)==null){
+          //  throw new TomTechExcepcion(HttpStatus.NOT_FOUND, "Id no encontrado");
+            throw  new TomTechExcepcion(APIError.PRODUCT_NOT_FOUND);
+        }
+        Product transformed = conversionService.convert(productDTO,Product.class);
+        Product result = repository.update(id,transformed);
+
+        return conversionService.convert(result,ProductDTO.class);
+
+    }
+
     public void delete (Integer id){
         if(getProductsById(id)==null){
-            throw new TomTechExcepcion(HttpStatus.NOT_FOUND, "Id no encontrado");
+          //  throw new TomTechExcepcion(HttpStatus.NOT_FOUND, "Id no encontrado");
+            throw  new TomTechExcepcion(APIError.PRODUCT_NOT_FOUND);
 
         }
         repository.delete(id);
