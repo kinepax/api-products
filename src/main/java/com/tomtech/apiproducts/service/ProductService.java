@@ -7,7 +7,6 @@ import com.tomtech.apiproducts.model.Product;
 import com.tomtech.apiproducts.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 
@@ -36,8 +35,6 @@ public class ProductService {
     public ProductDTO getProductsById(Integer id ){
         Optional<Product> result = repository.getProductById(id);
         if(result.isEmpty()){
-
-            //throw new TomTechExcepcion(HttpStatus.NOT_FOUND, "Producto no encontrado con ID: " + id);
             throw new TomTechExcepcion(APIError.PRODUCT_NOT_FOUND);
         }
         return conversionService.convert(result.get(),ProductDTO.class);
@@ -46,14 +43,12 @@ public class ProductService {
 
 
 
-    public ProductDTO save (ProductDTO productDTO   ){
-        if(Objects.nonNull(productDTO.getId())){
-          //  throw new TomTechExcepcion(HttpStatus.BAD_REQUEST, "Mismo id no permitido");
+    public ProductDTO save (ProductDTO product   ){
+        if(Objects.nonNull(product.getId())){
             throw new TomTechExcepcion(APIError.PRODUCT_WITH_SAME_ID);
-
         }
 
-        Product transformed = conversionService.convert(productDTO,Product.class);
+        Product transformed = conversionService.convert(product,Product.class);
         Product result = repository.save(Objects.requireNonNull(transformed));
 
         return conversionService.convert(result,ProductDTO.class);
@@ -63,7 +58,6 @@ public class ProductService {
 
     public ProductDTO update(Integer id , ProductDTO productDTO) {
         if(getProductsById(id)==null){
-          //  throw new TomTechExcepcion(HttpStatus.NOT_FOUND, "Id no encontrado");
             throw  new TomTechExcepcion(APIError.PRODUCT_NOT_FOUND);
         }
         Product transformed = conversionService.convert(productDTO,Product.class);
@@ -75,7 +69,6 @@ public class ProductService {
 
     public void delete (Integer id){
         if(getProductsById(id)==null){
-          //  throw new TomTechExcepcion(HttpStatus.NOT_FOUND, "Id no encontrado");
             throw  new TomTechExcepcion(APIError.PRODUCT_NOT_FOUND);
 
         }
